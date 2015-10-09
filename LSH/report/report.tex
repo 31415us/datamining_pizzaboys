@@ -1,7 +1,10 @@
 \documentclass[a4paper, 11pt]{article}
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{algorithm2e}
 \usepackage[pdftex]{hyperref}
+\usepackage{listings}
+\input{listing_setting.tex}
 
 % Lengths and indenting
 \setlength{\textwidth}{16.5cm}
@@ -25,8 +28,36 @@
 \maketitle
 
 \section*{Approximate near-duplicate search using Locality Sensitive Hashing} 
-Briefly describe the steps used to produce the solution. Feel
-free to add plots or screenshots if you think it's necessary. The
-report should contain a maximum of 2 pages.
+In this project we applied Locality Sensitive Hashing (LSH) to select pair of near-duplicates from a set of videos. The input consists of a long list of lines, where every line contains the video ID and a set of shingles for that video. 
+\section{Mapper}
+In order to implement LSH we need to compute a signature for each video. The calculation of the signature was made using a set of 100 hash functions. Every hash function is of the form:
+\begin{equation}
+h_i(r) = a_ir + b_i
+\end{equation}
+where $a_i$ and $b_i$ are random numbers. Therefore before starting to read the input we computed these two random values for every hash function, i.e. a random matrix of size $100\times 2$.
+\begin{lstlisting}
+hash_functions = np.random.randint(MAX_INT, size=(HASH_FUNC_NUM, 2))
+\end{lstlisting}
+A signature for video $v$ is then computed using the following algorithm:
+\begin{algorithm}
+\For{i in 1:100}{
+	signature[i] $\leftarrow \infty$
+}
+\For{r in shingle}{
+	\For{j in 1:100}{
+		hash $\leftarrow$ h(r) \% MAX\_INT
+		signature[i] $\leftarrow$ min(signature[i], hash)
+	}
+}
+\end{algorithm}
+
+MAX\_INT is the maximum 16 bits integer. Each signature will be split into 10 segments; therefore every segment is a vector of length 10. Every segment will be then mapped into a bucket; so the number of buckets is also 10. Hence before reading the input we need to initialize the hash function that maps a segment into a bucket. These hash functions have the following form:
+\begin{equation}
+h(\textbf{s}) = \sum_{i = 1}^{10} c_is_i + b_i
+\end{equation}
+The hash functions are initialized using the following command:
+\begin{lstlisting}
+bucket_hash_functions = np.random.randint(MAX_INT, size=(BUCKET_SIZE + 1)).
+\end{lstlisting}
 
 \end{document} 
