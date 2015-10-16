@@ -53,11 +53,11 @@ A signature for video $v$ is then computed using the following algorithm:
 
 MAX\_INT is the maximum 16 bits integer. Each signature will be split into 10 segments; therefore every segment is a vector of length 10. Every segment will be then mapped into a bucket; so the number of buckets is also 10. Hence before reading the input we need to initialize the hash function that maps a segment into a bucket. These hash functions have the following form:
 \begin{equation}
-h(\textbf{s}) = \sum_{i = 1}^{10} c_is_i + b_i
+h(\textbf{s}) = \sum_{i = 1}^{10} c_is_i + b
 \end{equation}
 The hash functions are initialized using the following command:
 \begin{lstlisting}
-bucket_hash_functions = np.random.randint(MAX_INT, size=(BUCKET_SIZE + 1)).
+bucket_hash_fn = np.random.randint(MAX_INT, size=(BUCKET_SIZE + 1))
 \end{lstlisting}
 
 Finally the mapper will output for each line of input 10 key value pairs, where
