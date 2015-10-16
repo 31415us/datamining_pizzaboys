@@ -45,7 +45,7 @@ A signature for video $v$ is then computed using the following algorithm:
 }
 \For{r in shingle}{
 	\For{j in 1:100}{
-		hash $\leftarrow$ h(r) \% MAX\_INT
+		hash $\leftarrow$ h(r) \% MAX\_INT \\
 		signature[i] $\leftarrow$ min(signature[i], hash)
 	}
 }
@@ -59,5 +59,17 @@ The hash functions are initialized using the following command:
 \begin{lstlisting}
 bucket_hash_functions = np.random.randint(MAX_INT, size=(BUCKET_SIZE + 1)).
 \end{lstlisting}
+
+Finally the mapper will output for each line of input 10 key value pairs, where
+the keys are the output of the above 10 hash functions and the original input line
+as value.
+
+\section{Reducer}
+
+The reducer computes the real Jaccard Similarity for every pair of videos that
+hashed to the same value in some bucket and outputs the pair if the similarity
+is $\ge 0.9$, in order to eliminate false positives. 
+
+\section{Participation}
 
 \end{document} 
