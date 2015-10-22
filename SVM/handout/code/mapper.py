@@ -7,7 +7,7 @@ import numpy as np
 DIMENSION = 400  # Dimension of the original data.
 CLASSES = (-1, +1)   # The classes that we are trying to predict.
 
-LAMBDA = 1.0
+LAMBDA = 0.1
 
 def transform(x_original):
     return x_original
@@ -27,12 +27,17 @@ if __name__ == "__main__":
 
         score = label * x.dot(w)
 
-        nu = 1.0 / np.sqrt(nb_iter)
+        #nu = 1.0 / np.sqrt(nb_iter)
+        nu = 1.0 / (LAMBDA * nb_iter)
+
+        grad = w
 
         if score < 1.0:
-            unprojected = w - nu * label * x
-            inv_norm = 1.0 / np.linalg.norm(unprojected)
-            w = min(1.0, inv_sqrt_lambda * inv_norm) * unprojected
+            grad = grad + label * x
+
+        unprojected = w - nu * grad
+        inv_norm = 1.0 / np.linalg.norm(unprojected)
+        w = min(1.0, inv_sqrt_lambda * inv_norm) * unprojected
 
         nb_iter = nb_iter + 1
 
