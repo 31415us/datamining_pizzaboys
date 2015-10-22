@@ -18,6 +18,9 @@ if __name__ == "__main__":
     #w = np.random.random(DIMENSION)
     nu = 1.0
     nb_iter = 1
+
+    diag = np.ones(DIMENSION)
+
     for line in sys.stdin:
         line = line.strip()
         (label, x_string) = line.split(" ", 1)
@@ -35,9 +38,15 @@ if __name__ == "__main__":
         if score < 1.0:
             grad = grad + label * x
 
-        unprojected = w - nu * grad
-        inv_norm = 1.0 / np.linalg.norm(unprojected)
-        w = min(1.0, inv_sqrt_lambda * inv_norm) * unprojected
+        diag = diag + grad * grad
+
+        #unprojected = w - nu * grad
+        #inv_norm = 1.0 / np.linalg.norm(unprojected)
+        #w = min(1.0, inv_sqrt_lambda * inv_norm) * unprojected
+
+        steps = nu * (np.ones(DIMENSION) / np.sqrt(diag))
+
+        w = w - steps * grad
 
         nb_iter = nb_iter + 1
 
