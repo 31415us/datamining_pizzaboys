@@ -9,17 +9,21 @@ CLASSES = (-1, +1)   # The classes that we are trying to predict.
 
 LAMBDA = 0.1
 
+OUT_DIMENSION = DIMENSION # dimension after transformation
+
 def transform(x_original):
-    return x_original
+    #out = np.concatenate([x_original, x_original * x_original])
+    out = np.sqrt(x_original * x_original * x_original)
+    return out
 
 if __name__ == "__main__":
     inv_sqrt_lambda = 1.0 / np.sqrt(LAMBDA)
-    w = np.zeros(DIMENSION)
+    w = np.zeros(OUT_DIMENSION)
     #w = np.random.random(DIMENSION)
     nu = 1.0
     nb_iter = 1
 
-    diag = np.ones(DIMENSION)
+    diag = np.ones(OUT_DIMENSION)
 
     for line in sys.stdin:
         line = line.strip()
@@ -44,9 +48,13 @@ if __name__ == "__main__":
         #inv_norm = 1.0 / np.linalg.norm(unprojected)
         #w = min(1.0, inv_sqrt_lambda * inv_norm) * unprojected
 
-        steps = nu * (np.ones(DIMENSION) / np.sqrt(diag))
+        steps = nu * (np.ones(OUT_DIMENSION) / np.sqrt(diag))
 
         w = w - steps * grad
+
+        # projection
+        inv_norm = 1.0 / np.linalg.norm(w)
+        w = min(1.0, inv_sqrt_lambda * inv_norm) * w
 
         nb_iter = nb_iter + 1
 

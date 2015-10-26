@@ -5,11 +5,11 @@ import logging
 import sys
 import numpy as np
 
-from mapper import DIMENSION
+from mapper import OUT_DIMENSION
 
 if __name__ == "__main__":
     count = 0
-    w_acc = np.zeros(DIMENSION)
+    w_acc = np.zeros(OUT_DIMENSION)
     for line in sys.stdin:
         line = line.strip()
 
