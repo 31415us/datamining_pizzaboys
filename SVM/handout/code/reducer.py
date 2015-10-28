@@ -1,7 +1,6 @@
 #!/local/anaconda/bin/python
 # IMPORTANT: leave the above line as is.
 
-import logging
 import sys
 import numpy as np
 
