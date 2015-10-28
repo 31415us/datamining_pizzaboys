@@ -4,7 +4,7 @@
 import sys
 import numpy as np
 
-from mapper import OUT_DIMENSION
+OUT_DIMENSION = 400
 
 if __name__ == "__main__":
     count = 0
