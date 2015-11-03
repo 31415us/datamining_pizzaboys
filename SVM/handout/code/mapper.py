@@ -6,6 +6,8 @@ import numpy as np
 
 from sklearn import linear_model as lm
 
+from sklearn.utils import shuffle
+
 DIMENSION = 400  # Dimension of the original data.
 CLASSES = (-1, +1)   # The classes that we are trying to predict.
 
@@ -28,15 +30,24 @@ class RandomFourierProjector(object):
 PROJECTOR = RandomFourierProjector(OUT_DIMENSION, RAND_SEED)
 
 def transform(x_original):
-    return PROJECTOR.project(x_original)
+    #return PROJECTOR.project(x_original)
+    return np.concatenate([np.ones(1), x_original])
 
 if __name__ == "__main__":
 
-    classifier = lm.SGDClassifier(loss='hinge', penalty='l2', fit_intercept=False)
+    #classifier = lm.SGDClassifier(
+    #        loss='modified_huber',
+    #        penalty='l1',
+    #        fit_intercept=False,
+    #        warm_start=False,
+    #        power_t=1.0,
+    #        learning_rate='optimal',
+    #        n_iter=10,
+    #        shuffle=True)
 
     #nb_iter = 1
-    #x_vecs = []
-    #labels = []
+    x_vecs = []
+    labels = []
 
     for line in sys.stdin:
         line = line.strip()
@@ -45,11 +56,11 @@ if __name__ == "__main__":
         x_original = np.fromstring(x_string, sep=' ')
         x = transform(x_original)  # Use our features.
 
-        #x_vecs.append(x)
-        #labels.append(label)
+        x_vecs.append(x)
+        labels.append(label)
 
         # single point updates
-        classifier.partial_fit(np.array([x]), np.array([label]), classes=CLASSES)
+        #classifier.partial_fit(np.array([x]), np.array([label]), classes=CLASSES)
 
         # use for batch updates
         #if nb_iter % 10000 == 0:
@@ -59,6 +70,21 @@ if __name__ == "__main__":
 
         #nb_iter = nb_iter + 1
 
-    # use dummy key to ensure that we reduce over all mapper outputs
-    str_repr = ' '.join(map(str, classifier.coef_[0]))
-    print "{key}\t{val}".format(key=1, val=str_repr)
+    for _ in range(0, 10):
+        classifier = lm.SGDClassifier(
+                loss='modified_huber',
+                penalty='l1',
+                fit_intercept=False,
+                warm_start=False,
+                power_t=1.0,
+                learning_rate='optimal',
+                n_iter=5,
+                shuffle=True)
+
+        classifier.fit(np.array(x_vecs), np.array(labels))
+
+        x_vecs, labels = shuffle(x_vecs, labels)
+
+        # use dummy key to ensure that we reduce over all mapper outputs
+        str_repr = ' '.join(map(str, classifier.coef_[0]))
+        print "{key}\t{val}".format(key=1, val=str_repr)
