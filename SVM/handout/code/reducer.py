@@ -4,7 +4,7 @@
 import sys
 import numpy as np
 
-OUT_DIMENSION = 401
+OUT_DIMENSION = 801
 
 if __name__ == "__main__":
     count = 0
