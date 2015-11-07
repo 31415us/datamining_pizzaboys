@@ -10,7 +10,13 @@ DIMENSION = 400  # Dimension of the original data.
 CLASSES = (-1, +1)   # The classes that we are trying to predict.
 
 def transform(x_original):
-    return np.concatenate([np.ones(1), np.arctan(x_original), np.sqrt(np.abs(x_original))]) 
+    x =  np.concatenate(
+            [np.ones(1),
+             np.sqrt(np.abs(x_original)),
+             np.cosh((np.pi / 2) * x_original) - 1,
+             np.sin((np.pi / 2) * x_original),
+             ]) 
+    return x
 
 def cv_error(X_valid, Y_valid, w):
     pred = np.sign(X_valid.dot(w))
@@ -18,11 +24,11 @@ def cv_error(X_valid, Y_valid, w):
 
     return float(correct) / np.size(Y_valid)
 
-
 if __name__ == "__main__":
 
     classifier = lm.SGDClassifier(
-            loss='modified_huber',
+            #loss='modified_huber',
+            loss='hinge',
             penalty='l1',
             fit_intercept=False,
             warm_start=False,
@@ -41,7 +47,7 @@ if __name__ == "__main__":
         x_original = np.fromstring(x_string, sep=' ')
         x = transform(x_original)  # Use our features.
 
-        ## uncomment for cross validation
+        # uncomment for cross validation
         #if np.random.random() <= 0.1:
         #    x_valid.append(x)
         #    y_valid.append(label)
