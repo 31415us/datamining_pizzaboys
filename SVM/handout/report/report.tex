@@ -28,13 +28,15 @@
 \maketitle
 
 \section*{Large Scale Image Classification} 
-This project consists of training a model for classification of two images, namely : Nature and People. From a set of extracted feature, we applied made use of a Stochastic Gradient Descent classifier.
+This project consists of training a model for classification of two images, namely : Nature and People. From a set of extracted feature, we applied made use of a Stochastic Gradient Descent (SGD) classifier.
 \section{Mapper}
+
+In order to make a justified choice of the several parameters we could tune, we used an estimation of the out-of-sample accuracy of the classification algorithm. To obtain this estimation, every time we run the classifier we randomly split the provided data set into a training set (80\% of the dataset) and a smaller test set (20\%). This split is made on-line as we stream the data. We then train the classifier on the training set and evaluate it on the test set, so that we obtain an estimate of the out-of-sample accuracy.
 
 The mapper is divided into two subsequent parts :
 \begin{enumerate}
 \item Feature transformation
-\item Classification with Cross-validation
+\item Classification with (SGD)
 \end{enumerate}
 
 1.) The method transforms applies the following transformation on the sample features :
@@ -43,10 +45,11 @@ The mapper is divided into two subsequent parts :
 \item $\widetilde{x_2} = cosh((\frac{\pi}{2})*x) - 1$
 \item $\widetilde{x_3} = sin((\frac{\pi}{2})*x)$
 \end{itemize}
+The output feature is given by a concatenation of these parts: $x_{out} = [1, \widetilde{x_1}, \widetilde{x_2}, \widetilde{x_3}]$. The leading 1 is used as intercept.
 
 \textbf{NOTE}: We also tried to implement Random Fourier Feature transformation but they gave worse results that the aforementioned transformations.
 
-2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. In order to make a justified choice of the several parameters we can set in the configuration of the algorithm, we use an estimation of the out-of-sample accuracy of the algorithm. To obtain this estimation, every time we run the classifier we randomly split the provided data set into a training set (80\% of the dataset) and a smaller test set (20\%). We then compute the classifier on the training set and evaluate it on the test set; by doing this we get an estimate of the out-of-sample accuracy of the algorithm.
+2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. We use \textit{modified huber} as loss-function which is a smooth loss that brings tolerance to outliers as well as probability estimates.
 
 Finally the mapper will output the tuple (1, feature\_weights) for the learned dataset.
 
