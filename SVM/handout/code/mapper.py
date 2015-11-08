@@ -12,13 +12,13 @@ CLASSES = (-1, +1)   # The classes that we are trying to predict.
 def transform(x_original):
     x =  np.concatenate(
             [np.ones(1),
-             np.sqrt(np.abs(x_original)),
-             np.cosh((np.pi / 2) * x_original) - 1,
+             np.sqrt(np.abs(x_original)) +
+             (np.cosh((np.pi / 2) * x_original) - 1) +
              np.sin((np.pi / 2) * x_original),
              ]) 
     return x
 
-def cv_error(X_valid, Y_valid, w):
+def cv_accuracy(X_valid, Y_valid, w):
     pred = np.sign(X_valid.dot(w))
     correct = np.sum(Y_valid == pred)
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
         classifier.partial_fit(np.array([x]), np.array([label]), classes=CLASSES)
 
-    #print cv_error(np.array(x_valid), np.array(y_valid), classifier.coef_[0])
+    #print cv_accuracy(np.array(x_valid), np.array(y_valid), classifier.coef_[0])
 
     # use dummy key to ensure that we reduce over all mapper outputs
     str_repr = ' '.join(map(str, classifier.coef_[0]))
