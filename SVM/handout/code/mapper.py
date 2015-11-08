@@ -34,7 +34,6 @@ if __name__ == "__main__":
             warm_start=False,
             power_t=1.0,
             learning_rate='optimal',
-            n_iter=10,
             shuffle=True)
 
     x_valid = []
@@ -48,7 +47,7 @@ if __name__ == "__main__":
         x = transform(x_original)  # Use our features.
 
         # uncomment for cross validation
-        #if np.random.random() <= 0.1:
+        #if np.random.random() <= 0.2:
         #    x_valid.append(x)
         #    y_valid.append(label)
         #else:
