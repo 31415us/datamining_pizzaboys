@@ -33,18 +33,18 @@ This project consists of training a model for classification of two images, name
 
 The mapper is divided into two subsequent parts :
 \begin{enumerate}
-\item Feature transformation via Random Fourier Features
+\item Feature transformation
 \item Classification with Cross-validation
 \end{enumerate}
 
-%1.) The method transforms applies the following transformation on the sample features :
-%\begin{itemize}
-%\item $\widetilde{x_1} = arctan(x)$
-%\item $\widetilde{x_2} = \sqrt{|x|}$
-%\end{itemize}
+1.) The method transforms applies the following transformation on the sample features :
+\begin{itemize}
+\item $\widetilde{x_1} = \sqrt{|x|}$
+\item $\widetilde{x_2} = cosh((\frac{\pi}{2})*x) - 1$
+\item $\widetilde{x_3} = sin((\frac{\pi}{2})*x)$
+\end{itemize}
 
-1) The Random Fourier Feature algorithm works as following :
-
+\textbf{NOTE}: We also tried to implement Random Fourier Feature transformation but they gave worse results that the aforementioned transformations.
 
 2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. In order to better estimate the classification error, we implemented a cross-validation module which works as following : \\
 
