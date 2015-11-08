@@ -46,9 +46,7 @@ The mapper is divided into two subsequent parts :
 
 \textbf{NOTE}: We also tried to implement Random Fourier Feature transformation but they gave worse results that the aforementioned transformations.
 
-2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. In order to better estimate the classification error, we implemented a cross-validation module which works as following : \\
-
-Every sample has probability p = 0.9 to get selected training, or p = 0.1 for validation. This simulates a 10-fold cross validation process where we try to compute the prediction error on the holdout data. By running multiple times this method, samples get selected randomly for validation and estimate the cross validation error.
+2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. In order to make a justified choice of the several parameters we can set in the configuration of the algorithm, we use an estimation of the out-of-sample accuracy of the algorithm. To obtain this estimation, every time we run the classifier we randomly split the provided data set into a training set (80\% of the dataset) and a smaller test set (20\%). We then compute the classifier on the training set and evaluate it on the test set; by doing this we get an estimate of the out-of-sample accuracy of the algorithm.
 
 Finally the mapper will output the tuple (1, feature\_weights) for the learned dataset.
 
