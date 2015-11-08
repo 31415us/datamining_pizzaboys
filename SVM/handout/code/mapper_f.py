@@ -89,12 +89,13 @@ if __name__ == "__main__":
         x_original = np.fromstring(x_string, sep=' ')
         x = transform(x_original)  # Use our features.
 
-        x_batch100.append(x)
-        
-
-        y_batch100.append(label)
-
-        nbSamples += 1
+        if np.random.random() <= 0.1:
+            x_valid.append(x)
+            y_valid.append(label)
+        else:
+            x_batch100.append(x)
+            y_batch100.append(label)
+            nbSamples += 1
 
         if nbSamples == 100:
 
@@ -121,7 +122,7 @@ if __name__ == "__main__":
 
     if nbSamples > 0:
         w = np.zeros(401)
-        w_up = PEGASOS_batch(w, x_batch100, y_batch100, 20)
+        w_up = PEGASOS_batch(w, np.array(x_batch100), np.array(y_batch100), 20)
         ws.append(w_up)
         print 'nbSamples : %d' % nbSamples
         print np.array(ws).shape
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     
 
 
-    #print cv_accuracy(np.array(x_valid), np.array(y_valid), classifier.coef_[0])
+    print cv_accuracy(np.array(x_valid), np.array(y_valid), w_final)
 
     # use dummy key to ensure that we reduce over all mapper outputs
     str_repr = ' '.join(map(str, w_final))
