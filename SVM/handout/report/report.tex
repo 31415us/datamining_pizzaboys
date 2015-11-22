@@ -45,11 +45,11 @@ The mapper is divided into two subsequent parts :
 \item $\widetilde{x_2} = cosh((\frac{\pi}{2})*x) - 1$
 \item $\widetilde{x_3} = sin((\frac{\pi}{2})*x)$
 \end{itemize}
-The output feature is given by a concatenation of these parts: $x_{out} = [1, \widetilde{x_1}, \widetilde{x_2}, \widetilde{x_3}]$. The leading 1 is used as intercept.
+The output feature is given by the following concatenation: $x_{out} = [1, \widetilde{x_1} + \widetilde{x_2} + \widetilde{x_3}]$. The leading 1 is used as intercept.
 
 \textbf{NOTE}: We also tried to implement Random Fourier Feature transformation but they gave worse results that the aforementioned transformations.
 
-2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. We use \textit{modified huber} as loss-function which is a smooth loss that brings tolerance to outliers as well as probability estimates.
+2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. We use \textit{hinge} as loss-function which is the default linear SVM.
 
 Finally the mapper will output the tuple (1, feature\_weights) for the learned dataset.
 
