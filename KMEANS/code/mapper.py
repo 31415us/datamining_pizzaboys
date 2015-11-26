@@ -69,6 +69,7 @@ if __name__ == "__main__":
 
 
         D_prime = np.asarray([ D_prime[t] for t in indices_to_remove[:(len(D_prime)/2)] ])
+        D_prime = np.delete(D_prime, indices_to_remove[:(len(D_prime)/2)], 1)
         B+=S
 
     # Remove enventual duplicates

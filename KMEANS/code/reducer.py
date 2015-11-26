@@ -21,8 +21,18 @@ if __name__ == "__main__":
         else:
             C += cset
 
-        print len(C)
-
     C = np.asarray(C)
-
-
+    S_positions = np.random.randint(0, len(C), 100)
+    
+    i = 0
+    centers = [ C[index] for index in S_positions ]
+    while i < len(centers):
+        j = 0
+        while j < len(centers[i]):
+            if j != len(centers[i]) -1:
+                sys.stdout.write(str(centers[i][j]))# + ' ')
+            else:
+                sys.stdout.write(str(centers[i][j]) + '\n')
+            
+            j += 1
+        i += 1 
