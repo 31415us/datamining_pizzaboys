@@ -3,26 +3,27 @@
 
 import sys
 import numpy as np
-from ast import literal_eval
 
+from sklearn.cluster import KMeans
 
+k = 100
+d = 500
 
 if __name__ == "__main__":
 
-    C = None
+    X = np.zeros(shape=(0,d))
 
     for line in sys.stdin:
         line = line.strip()
         key, value = line.split('\t')
-        cset = literal_eval(value)
+        x = np.fromstring(value, sep=" ")
+        X = np.vstack( (X, x) )
 
-        if C is None:
-            C = cset
-        else:
-            C += cset
+    clusterer = KMeans(n_clusters=k)
 
-        print len(C)
+    clusterer.fit(X)
 
-    C = np.asarray(C)
-
+    for center in clusterer.cluster_centers_:
+        str_repr = ' '.join(map(str, center))
+        print str_repr
 
