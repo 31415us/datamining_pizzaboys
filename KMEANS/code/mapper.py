@@ -7,6 +7,7 @@ import random
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import euclidean
 from scipy.spatial import Voronoi
+from scipy.spatial import KDTree
 
 
 d = 500
@@ -74,8 +75,9 @@ if __name__ == "__main__":
             print 'New len of D_prime = '+ str(len(D_prime)/2)
 
 
-        D_prime = np.asarray([ D_prime[t] for t in indices_to_remove[:(len(D_prime)/2)] ])
-        if str(len(D_prime)/2 > 1:
+        # D_prime = np.asarray([ D_prime[t] for t in indices_to_remove[:(len(D_prime)/2)] ])
+
+        if len(D_prime)/2 > 1:
             D_prime = np.delete(D_prime, indices_to_remove[:(len(D_prime)/2)], 1)
         else:
             D_prime = []
@@ -83,17 +85,20 @@ if __name__ == "__main__":
 
     # Remove enventual duplicates
     B = np.unique(map(lambda a: str(list(a.flat)), B))
+    tree = KDTree(B)
+
+
     
-    if verbose:
-        print 'Now Voronoi partitioning'
+    # if verbose:
+    #     print 'Now Voronoi partitioning'
     
-    vor = Voronoi(B)
-    if verbose:
-        print 'Voronoi regions :'
-        print vor.regions
-    if verbose:
-        print 'Adding D to vor :'
-    vor.add_points(D)
+    # vor = Voronoi(B)
+    # if verbose:
+    #     print 'Voronoi regions :'
+    #     print vor.regions
+    # if verbose:
+    #     print 'Adding D to vor :'
+    # vor.add_points(D)
 
 
     emit(1, map(str, B))
