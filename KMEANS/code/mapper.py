@@ -24,7 +24,7 @@ def uniq(seq):
 def emit(key, value):
     print('%s\t%s' % (key, value))
     
-def q(x, b. Db, sumDist):
+def q(x, b, Db, sumDist):
     sumDist = 
     return (5/len(Db)+ (euclidean(x, b)**2)/(sumDist**2))
 
@@ -85,6 +85,7 @@ if __name__ == "__main__":
 
     # Remove enventual duplicates
     B = np.unique(map(lambda a: str(list(a.flat)), B))
+
     tree = KDTree(B)
 
 
