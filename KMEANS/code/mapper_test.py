@@ -59,4 +59,4 @@ if __name__ == "__main__":
     # removing duplicates
     B = np.unique(map(lambda a: str(list(a.flat)), B))
     
-    #emit(1, map(literal_eval, B))
+    emit(1, map(literal_eval, B))
