@@ -29,8 +29,6 @@ if __name__ == "__main__":
         verbose = True
 
     X = np.zeros(shape=(0,d))
-    print("Start")
-    i = 0
     for line in sys.stdin:
         line = line.strip()
         # Create sampling distribution
@@ -38,35 +36,29 @@ if __name__ == "__main__":
         # if random.random() < t:
             # X = np.vstack( (X, sample) )
         X = np.vstack( (X, sample) )
-        i+=1
-        sys.stdout.write(str(i)+'\r')
 
     D_prime = X
     B = []
-    print("Stop")
 
+    tree = None
     while len(B) < 0.1*len(X):
-        numSamples = 1000
+        numSamples = int(np.ceil(0.01 * len(X)))
         sample_indices = np.random.randint(0, len(D_prime), size=numSamples) # for S
        
         S = [D_prime[i] for i in sample_indices]
-        D_prime = np.delete(D_prime, sample_indices, 1)
+        D_prime = np.delete(D_prime, sample_indices, 0)
 
-        tree = KDTree(D_prime)
+        tree = KDTree(S)
 
-        indices_to_remove = set()
-        for sample in S:
-            indices_to_remove = indices_to_remove.union(set(tree.query(sample, k=3)[1]))
+        indices_to_remove = tree.query(D_prime, k=len(S) * 3)[1]
 
-        D_prime = np.delete(D_prime, indices_to_remove, 1)   
+        D_prime = np.delete(D_prime, indices_to_remove, 0)
 
         B+=S
-        print(len(B))
 
+    clusterer = MiniBatchKMeans(n_clusters=k, batch_size=1000, n_init=10)
 
-    clusterer = MiniBatchKMeans(n_clusters=k, batch_size=1000, n_init=10, init=B)
-
-    clusterer.fit(X)
+    clusterer.fit(B)
 
     for center in clusterer.cluster_centers_:
         str_repr = ' '.join(map(str, center))
