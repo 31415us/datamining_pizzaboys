@@ -11,7 +11,7 @@ from scipy.spatial import KDTree
 
 
 d = 500
-k = 100
+k = 600
 verbose = False
 
 t = 0.1
@@ -37,28 +37,29 @@ if __name__ == "__main__":
             # X = np.vstack( (X, sample) )
         X = np.vstack( (X, sample) )
 
-    D_prime = X
-    B = []
+    # D_prime = X
+    # B = []
 
-    tree = None
-    while len(B) < 0.1*len(X):
-        numSamples = int(np.ceil(0.01 * len(X)))
-        sample_indices = np.random.randint(0, len(D_prime), size=numSamples) # for S
+    # tree = None
+    # while len(B) < 0.3*len(X):
+    #     numSamples = int(np.ceil(0.01 * len(X)))
+    #     sample_indices = np.random.randint(0, len(D_prime), size=numSamples) # for S
        
-        S = [D_prime[i] for i in sample_indices]
-        D_prime = np.delete(D_prime, sample_indices, 0)
+    #     S = [D_prime[i] for i in sample_indices]
+    #     D_prime = np.delete(D_prime, sample_indices, 0)
 
-        tree = KDTree(S)
+    #     tree = KDTree(S)
 
-        indices_to_remove = tree.query(D_prime, k=len(S) * 3)[1]
+    #     indices_to_remove = tree.query(D_prime, k=len(S) * 6)[1]
 
-        D_prime = np.delete(D_prime, indices_to_remove, 0)
+    #     D_prime = np.delete(D_prime, indices_to_remove, 0)
 
-        B+=S
+    #     B+=S
 
     clusterer = MiniBatchKMeans(n_clusters=k, batch_size=1000, n_init=10)
 
-    clusterer.fit(B)
+    # clusterer.fit(B)
+    clusterer.fit(X)
 
     for center in clusterer.cluster_centers_:
         str_repr = ' '.join(map(str, center))
