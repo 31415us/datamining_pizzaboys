@@ -2,7 +2,7 @@ import numpy.random
 import numpy as np
 
 articles = {}
-coefficients = {}
+coefficients = {} # article_id -> M, inv(M), b
 ALPHA = 1.8
 last_recommended = None
 last_user = None
@@ -15,22 +15,22 @@ def set_articles(some_articles):
 
 
 def update(reward):
-    m, b = coefficients[last_recommended]
+    m, m_inv, b = coefficients[last_recommended]
     m += np.dot(last_user, np.transpose(last_user))
     b += np.dot(reward, last_user)
-    coefficients[last_recommended] = m, b
+    coefficients[last_recommended] = m, np.linalg.inv(m), b
 
 
-def reccomend(time, user_features, articles):
+def reccomend(time, user_features, some_articles):
     ucbs = {}
     dimension = len(user_features)
-    for article_id in articles:
+    for article_id in some_articles:
         if not coefficients.__contains__(article_id):
-            coefficients[article_id] = np.identity(dimension), np.zeros(dimension)
-        m = coefficients[article_id][0]
-        w = np.dot(np.linalg.inv(m), coefficients[article_id][1])
+            coefficients[article_id] = np.identity(dimension), np.identity(dimension), np.zeros(dimension)
+        m_inv = coefficients[article_id][1]
+        w = np.dot(m_inv, coefficients[article_id][2])
         ucbs[article_id] = np.dot(w, user_features) + \
-                           ALPHA*np.sqrt(np.dot(np.dot(np.transpose(user_features), m), user_features))
+                           ALPHA*np.sqrt(np.dot(np.dot(np.transpose(user_features), m_inv), user_features))
     recommended = None, -np.inf
     for article_id in ucbs.keys():
         if ucbs[article_id] > recommended[1]:
