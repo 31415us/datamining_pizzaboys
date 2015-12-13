@@ -1,0 +1,156 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{algorithm2e}
+\usepackage[pdftex]{hyperref}
+\usepackage{listings}
+\input{listing_setting.tex}
+
+% Lengths and indenting
+\setlength{\textwidth}{16.5cm}
+\setlength{\marginparwidth}{1.5cm}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.15cm}
+\setlength{\textheight}{22cm}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{0cm}
+\setlength{\headheight}{0cm}
+\setlength{\headsep}{0cm}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\title{Data Mining: Learning from Large Data Sets - Fall Semester 2015}
+\author{fgmehlin@student.ethz.ch\\ matteopo@student.ethz.ch\\ piusv@student.ethz.ch\\}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Approximate near-duplicate search using Locality Sensitive Hashing} 
+In this project we applied Locality Sensitive Hashing (LSH) to select pair of near-duplicates from a set of videos. The input consists of a long list of lines, where every line contains the video ID and a set of shingles for that video. 
+\subsection{Mapper}
+In order to implement LSH we need to compute a signature for each video. The calculation of the signature was made using a set of 100 hash functions. Every hash function is of the form:
+\begin{equation}
+h_i(r) = a_ir + b_i
+\end{equation}
+where $a_i$ and $b_i$ are random numbers. Therefore before starting to read the input we computed these two random values for every hash function, i.e. a random matrix of size $100\times 2$.
+\begin{lstlisting}
+hash_functions = np.random.randint(MAX_INT, size=(HASH_FUNC_NUM, 2))
+\end{lstlisting}
+A signature for video $v$ is then computed using the following algorithm:
+\begin{algorithm}
+\For{i in 1:100}{
+	signature[i] $\leftarrow \infty$
+}
+\For{r in shingle}{
+	\For{j in 1:100}{
+		hash $\leftarrow$ h(r) \% MAX\_INT \\
+		signature[i] $\leftarrow$ min(signature[i], hash)
+	}
+}
+\end{algorithm}
+
+MAX\_INT is the maximum 16 bits integer. Each signature will be split into 10 segments; therefore every segment is a vector of length 10. Every segment will be then mapped into a bucket; so the number of buckets is also 10. Hence before reading the input we need to initialize the hash function that maps a segment into a bucket. These hash functions have the following form:
+\begin{equation}
+h(\textbf{s}) = \sum_{i = 1}^{10} c_is_i + b
+\end{equation}
+The hash functions are initialized using the following command:
+\begin{lstlisting}
+bucket_hash_fn = np.random.randint(MAX_INT, size=(BUCKET_SIZE + 1))
+\end{lstlisting}
+
+Finally the mapper will output for each line of input 10 key value pairs, where
+the keys are the output of the above 10 hash functions and the original input line
+as value.
+
+\subsection{Reducer}
+
+The reducer computes the real Jaccard Similarity for every pair of videos that
+hashed to the same value in some bucket and outputs the pair if the similarity
+is $\ge 0.9$, in order to eliminate false positives. 
+
+\subsection{Participation}
+
+We started by approaching the problem individually, so each of us could deeply understand the project and try to solve it. As all the solutions were competent in the sense of the results (score), we decided to merge all the versions into one. Therefore, we all participated at all levels of the project.
+
+\newpage
+
+
+
+
+\section{Large Scale Image Classification} 
+This project consists of training a model for classification of two images, namely : Nature and People. From a set of extracted feature, we applied made use of a Stochastic Gradient Descent (SGD) classifier.
+\subsection{Mapper}
+
+In order to make a justified choice of the several parameters we could tune, we used an estimation of the out-of-sample accuracy of the classification algorithm. To obtain this estimation, every time we run the classifier we randomly split the provided data set into a training set (80\% of the dataset) and a smaller test set (20\%). This split is made on-line as we stream the data. We then train the classifier on the training set and evaluate it on the test set, so that we obtain an estimate of the out-of-sample accuracy.
+
+The mapper is divided into two subsequent parts :
+\begin{enumerate}
+\item Feature transformation
+\item Classification with (SGD)
+\end{enumerate}
+
+1.) The method transforms applies the following transformation on the sample features :
+\begin{itemize}
+\item $\widetilde{x_1} = \sqrt{|x|}$
+\item $\widetilde{x_2} = cosh((\frac{\pi}{2})*x) - 1$
+\item $\widetilde{x_3} = sin((\frac{\pi}{2})*x)$
+\end{itemize}
+The output feature is given by the following concatenation: $x_{out} = [1, \widetilde{x_1} + \widetilde{x_2} + \widetilde{x_3}]$. The leading 1 is used as intercept.
+
+\textbf{NOTE}: We also tried to implement Random Fourier Feature transformation but they gave worse results that the aforementioned transformations.
+
+2.) We use a Stochastic Gradient Descent Classifier algorithm with l1 regularizer provided by the sklearn library. We use \textit{hinge} as loss-function which is the default linear SVM.
+
+Finally the mapper will output the tuple (1, feature\_weights) for the learned dataset.
+
+\subsection{Reducer}
+
+The reducer aggregates the weights from the different mappers to produce the final feature weights.
+
+\subsection{Participation}
+
+We started by approaching the problem individually, so each of us could deeply understand the project and try to solve it. After some time, we defined one of the models as the most competent one and tried to improve it individually.
+
+
+
+
+
+
+\newpage
+\section{Explore-Exploit tradeoffs in Recommender Systems} 
+In this project we built a recommender system that suggests news articles to users given the history of their clicks. 
+The model we used is Linear UCB and our script exposes two main functions: \verb!recommend! and \verb!update!. \\
+The input consists of a log file where every line contains, among other information, a vector of user features and a list of available articles, where each article is identified by an ID. For every line of this file the script calls the function recommend and, in case a user feedback is available, the model is updated.
+
+\subsection{Model}
+The \verb!LinearModel! class of our script contains a dictionary \verb!stat_dict! where for every article $x$ we store a \verb!LinStat! object. The linear model also has some parameters, such as the dimension \verb!dim! of the user features vectors. The \verb!LinStat! object is simply a wrapper that contains four elements
+\begin{itemize}
+\item \verb!cov!: a matrix $M_x$ of size \verb!dim! $\times$ \verb!dim!
+\item \verb!inv_cov!: the inverse of $M_x$, which is stored for cashing purposes
+\item \verb!b!: a vector $b_x$ of size \verb!dim! also used in the model
+\item \verb!mean!: a cashed vector $w_x = M_x^{-1}b_x$
+\end{itemize}
+
+\subsection{Recommend}
+The recommendation phase is performed for every line in the log file, which provides the user features $z$ and a set of articles $\mathcal{A}$ which could be recommended. This function calls the method \verb!predict! in the \verb!LinUCB! object. For each of the articles in $\mathcal{A}$ we compute the $ \text{UCB}_x$ value:
+\begin{equation}
+\text{UCB}_x = w_xz + \alpha \sqrt{zM_x^{-1}z} \qquad \alpha=1.0
+\end{equation}
+and then the recommended article is computed as $\arg\max \, \text{UCB}_x$. The coefficients $w_x$ and $M_x^{-1}$ are retrieved from the \verb!LinearModel! object. Here the use of the cashed version of the inverse of $M_x$ entails a sensible speed-up. In case these items are not in the dictionary already, $M_x$ is initialized to the identity matrix and both $b_x$ and $w_x$ to the zero vector.
+
+\subsection{Update}
+If the recommended item matches the one actually suggested to the user, then the \verb!update! function is called. A variable $y$ is set to 1 in case of a positive feedback (i.e. in case the user clicked on the link) and to -1 otherwise.
+The objects stored in the \verb!stat_dict! for the article $x$ are updated in the following manner:
+\begin{itemize}
+\item \verb!cov!: $M_x \leftarrow M_x+ zz^t$, where $z$ is the user features vector
+\item \verb!inv_cov!: $M_x^{-1}$
+\item \verb!b!: $b \leftarrow b + y*z$
+\item \verb!mean!: $w_x \leftarrow M_x^{-1}b_x$
+\end{itemize}
+
+\subsection*{Participation}
+We started by approaching the problem individually, so each of us could deeply understand the project and try to solve it. We could then help each other to face the problems that we encountered individually; the final version merges everyone's effort.
+\end{document} 
+
