@@ -1,14 +1,15 @@
 \documentclass[a4paper, 11pt]{article}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage[pdftex]{hyperref}
+\usepackage{algorithm2e}
+\usepackage{listings}
 
 % Lengths and indenting
 \setlength{\textwidth}{16.5cm}
 \setlength{\marginparwidth}{1.5cm}
 \setlength{\parindent}{0cm}
 \setlength{\parskip}{0.15cm}
-\setlength{\textheight}{22cm}
+\setlength{\textheight}{25cm}
 \setlength{\oddsidemargin}{0cm}
 \setlength{\evensidemargin}{\oddsidemargin}
 \setlength{\topmargin}{0cm}
@@ -18,15 +19,34 @@
 \renewcommand{\familydefault}{\sfdefault}
 
 \title{Data Mining: Learning from Large Data Sets - Fall Semester 2015}
-\author{member1@student.ethz.ch\\ member2@student.ethz.ch\\ member3@student.ethz.ch\\}
+\author{fgmehlin@student.ethz.ch\\ matteopo@student.ethz.ch\\ piusv@student.ethz.ch\\}
 \date{\today}
 
 \begin{document}
 \maketitle
 
 \section*{Extracting Representative Elements} 
-Briefly describe the steps used to produce the solution. Feel
-free to add plots or screenshots if you think it's necessary. The
-report should contain a maximum of 2 pages.
+This project is about extracting representative elements from a large image data set. Each image is represented by a set of 500 features. The idea is to extract a subset that best represents the whole dataset.
+
+\section{Mapper}
+
+In the mapper, the following two approaches were tested :
+
+\textbf{Coresets via Adaptive Sampling :} We tried to implement this method at first by following the algorithm depicted in the lecture. However, the computation was very expensive. Indeed, computing the distance between points and cluster centers as well as the \textbf{q} distribution took too much time. \\
+
+\textbf{MiniBatchKmeans :}\\
+In the final implementation of the mapper we run a batched version of K-means (provided by scipy as MiniBatchKMeans) on the whole data set accessible to the mapper. We try to find a bigger number
+of cluster centers as are needed in the end. The idea is that this will hopefully
+summarize small local clusters decently well and approximate something like a core set. \\
+
+The optimal solution included computing the batched k-means with 600 clusters in each mapper, batch size of 1000 samples and the number of restarts to 10.
+
+\section{Reducer}
+
+In the reducer we compute regular K-means on the output of all mappers.
+
+\section{Participation}
+
+As usual, we started by approaching the problem individually, so each of us could deeply understand the requirements of the project. During the few meetings we have had, we tried the aforementioned approaches together and came up with the final version.
 
 \end{document} 
