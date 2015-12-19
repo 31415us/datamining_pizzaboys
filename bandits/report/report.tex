@@ -114,8 +114,32 @@ The reducer aggregates the weights from the different mappers to produce the fin
 We started by approaching the problem individually, so each of us could deeply understand the project and try to solve it. After some time, we defined one of the models as the most competent one and tried to improve it individually.
 
 
+\newpage
 
 
+\section*{Extracting Representative Elements} 
+This project is about extracting representative elements from a large image data set. Each image is represented by a set of 500 features. The idea is to extract a subset that best represents the whole dataset.
+
+\subsection{Mapper}
+
+In the mapper, the following two approaches were tested :
+
+\textbf{Coresets via Adaptive Sampling :} We tried to implement this method at first by following the algorithm depicted in the lecture. However, the computation was very expensive. Indeed, computing the distance between points and cluster centers as well as the \textbf{q} distribution took too much time. \\
+
+\textbf{MiniBatchKmeans :}\\
+In the final implementation of the mapper we run a batched version of K-means (provided by scipy as MiniBatchKMeans) on the whole data set accessible to the mapper. We try to find a bigger number
+of cluster centers as are needed in the end. The idea is that this will hopefully
+summarize small local clusters decently well and approximate something like a core set. \\
+
+The optimal solution included computing the batched k-means with 600 clusters in each mapper, batch size of 1000 samples and the number of restarts to 10.
+
+\subsection{Reducer}
+
+In the reducer we compute regular K-means on the output of all mappers.
+
+\subsection{Participation}
+
+As usual, we started by approaching the problem individually, so each of us could deeply understand the requirements of the project. During the few meetings we have had, we tried the aforementioned approaches together and came up with the final version.
 
 
 \newpage
